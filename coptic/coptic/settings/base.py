@@ -31,18 +31,16 @@ INSTALLED_APPS = (
 	'mod_wsgi.server'
 )
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.common.CommonMiddleware',
 	'django.middleware.csrf.CsrfViewMiddleware',
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
-if django.VERSION[0] < 2:
-	MIDDLEWARE_CLASSES.append('django.contrib.auth.middleware.SessionAuthenticationMiddleware')
-MIDDLEWARE = MIDDLEWARE_CLASSES # for django >= 1.10
-
 
 # for newer django
 TEMPLATES = [
@@ -59,11 +57,6 @@ TEMPLATES = [
 	}
 ]
 
-# for older django
-TEMPLATE_CONTEXT_PROCESSORS = (
-	"django.core.context_processors.request",
-	"django.contrib.auth.context_processors.auth"
-)
 
 ROOT_URLCONF = 'coptic.urls'
 
@@ -103,6 +96,15 @@ LOGGING = {
 	    },
 	}
 }
+# Cache configuration
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': '/tmp/django_cache',
+    }
+}
+
+CACHE_TTL = 60 * 60 * 24 * 7  # 1 week
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/

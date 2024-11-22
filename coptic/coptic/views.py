@@ -6,6 +6,9 @@ from django.db.models import Q, Case, When, IntegerField, F
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models.functions import Lower
 from texts.search_fields import SearchField
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
+from coptic.settings.base import CACHE_TTL
 from coptic.settings.base import DEPRECATED_URNS
 from collections import OrderedDict
 import texts.urn as urnlib
@@ -19,12 +22,13 @@ from django.template.defaulttags import register
 def keyvalue(dict, key):
     return dict.get(key)
 
+@cache_page(CACHE_TTL)
 def home_view(request):
     'Home'
     context = _base_context()
     return render(request, 'home.html', context)
 
-
+@cache_page(CACHE_TTL)
 def corpus_view(request, corpus=None):
     corpus_object = get_object_or_404(models.Corpus, slug=corpus)
 
@@ -64,7 +68,7 @@ def corpus_view(request, corpus=None):
     })
     return render(request, 'corpus.html', context)
 
-
+@cache_page(CACHE_TTL)
 def text_view(request, corpus=None, text=None, format=None):
     text_object = get_object_or_404(models.Text, slug=text)
     if not format:
@@ -158,6 +162,7 @@ def get_meta_values(meta):
     meta_values = [re.sub(HTML_TAG_REGEX, '', meta_value) for meta_value in meta_values]
     return meta_values
 
+@cache_page(CACHE_TTL)
 def index_view(request, special_meta=None):
     context = _base_context()
     value_corpus_pairs = OrderedDict()
