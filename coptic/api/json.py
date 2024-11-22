@@ -1,21 +1,13 @@
-# Version of json-view module by these good folks: 
-# https://github.com/jsocol/django-jsonview/blob/master/jsonview/decorators.py
-
 import logging
 from functools import wraps
 
 from django import http
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from django.core.handlers.base import BaseHandler
+from django.http import Http404
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.signals import got_request_exception
-try:
-    # Django versions >= 1.9
-    from django.utils.module_loading import import_module
-except ImportError:
-    # Django versions < 1.9
-    from django.utils.importlib import import_module
+from django.utils.module_loading import import_module
 
 import sys
 if sys.version_info[0] == 3:

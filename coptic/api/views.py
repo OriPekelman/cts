@@ -177,8 +177,9 @@ def _process_param_values(params, query_dict):
                 clean['urn'] = query_dict['urn_value'].strip()
 
         # Then process the supplied query
-        filters = [json.loads(filter) for filter in query_dict.getlist('filters')]
+        filters = query_dict.getlist('filters')
         if filters:
+            filters = [json.loads(filter) for filter in filters]
             clean['filters'] = filters
 
     else:
