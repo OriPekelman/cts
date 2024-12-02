@@ -3,10 +3,10 @@ name: Django CI
 on:
   push:
     branches:
-      - master
+      - cleanup
   pull_request:
     branches:
-      - master
+      - cleanup
 
 jobs:
   build:
