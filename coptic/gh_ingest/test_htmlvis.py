@@ -23,7 +23,8 @@ class TestHtmlVis(unittest.TestCase):
         #FIXME: this is the original .. invalid markup.
         text = "<lemma>word1\nword2\n</lemma>"
         expected_output = "<div class=\"htmlvis dipl\">word2</span></div>"
-        output = generate_visualization("dipl", text)
+        config='pb_xml_id\ttable:title; style="pb"\tvalue\npb_xml_id\ttr\ncb_n\ttd; style="cb"\nlb_n\tdiv:line; style="copt_line"\tvalue\nhi_rend\thi_rend:rend\tvalue\ntok\tspan\tvalue\norig_word\ta\t" "\n'
+        output = generate_visualization(config, text,"dipl")
         self.assertEqual(output, expected_output)
 
     def test_parse_config(self):

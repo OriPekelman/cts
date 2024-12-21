@@ -128,6 +128,7 @@ lb_n	div:line; style="copt_line"	value
 hi_rend	hi_rend:rend	value
 tok	span	value
 orig_word	a	" "
+
 """,
 "analytic" : """chapter_n	div:chapter; style="chapter"	value
 translation div:trans; style="translation"	value
@@ -142,6 +143,7 @@ norm	NULL	"%%value%%"
 pos	NULL	"</a>"
 pos	rt:pos; style="pos"	value
 pb_xml_id	q:page; style="page"	value
+
 """,
 "verses" : """chapter_n	div:chapter; style="chapter"	value
 orig_group	span; style="word"
@@ -159,5 +161,6 @@ norm	NULL	"%%value%%"
 pos	NULL	"</a>"
 translation t:title; style="translation"	value
 verse_n	div:verse; style="verse"	value
+
 """
 }

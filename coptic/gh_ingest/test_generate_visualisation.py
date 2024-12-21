@@ -11,6 +11,8 @@ class TestHtmlVis(unittest.TestCase):
     def test_generate_visualization(self):
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
         base_path = os.path.join(BASE_DIR, 'coptic/gh_ingest/docs/example')
+        config_file = os.path.join(base_path, 'ExtData/dipl.config')
+        config_content = self.read_file(config_file)
         
         sgml_file = os.path.join(base_path, 'pilate.1643.27-28.tt')
         expected_output_file = os.path.join(base_path, 'pilate.1643.27-28.diplomatic.html')
@@ -18,7 +20,7 @@ class TestHtmlVis(unittest.TestCase):
         sgml_content = self.read_file(sgml_file)
         expected_output = self.read_file(expected_output_file)
 
-        generated_output = generate_visualization("dipl", sgml_content)
+        generated_output = generate_visualization(config_content, sgml_content, "dipl")
         self.maxDiff=None
         self.assertEqual(generated_output.strip()[0:4000], expected_output.strip()[0:4000], "Generated output does not match expected output")
 

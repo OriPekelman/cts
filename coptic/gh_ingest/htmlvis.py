@@ -474,16 +474,11 @@ def render_html(toks, elts, directives, config_name):
 DEBUG = False
 
 
-def generate_visualization(config_name, text ):
-    if DEBUG:
-        with open("htmlvis_latest_config_text.txt", "w") as f:
-            f.write( HTML_CONFIGS[config_name])
-        with open("htmlvis_latest_text.txt", "w") as f:
-            f.write(text)
-    directives = parse_config( HTML_CONFIGS[config_name])
+def generate_visualization(config, text, config_name ):
+    directives = parse_config(config)
     toks, elts = parse_text(text)
 
-    return render_html(toks, elts, directives,config_name)
+    return render_html(toks, elts, directives, config_name )
 
 
 if __name__ == "__main__":

@@ -79,10 +79,6 @@ def text_view(request, corpus=None, text=None, format=None):
         visualization = text_object.html_visualizations.all()[0]
         format = visualization.visualization_format.slug
         return text_view(request, corpus=corpus, text=text, format=format)
-
-    # FIXME: temporary hack until we align the naming of visualisations
-    # FIXME: It should probably be `norm`
-    # Changed to use visualization_format_slug
     
     visualization = text_object.get_visualization_by_slug(format)
     

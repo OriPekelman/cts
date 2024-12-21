@@ -87,6 +87,7 @@ class CorpusScraper:
             for d in os.listdir(self.repo_path)
             if os.path.isdir(os.path.join(self.repo_path, d)) and not d.startswith('.')
         ]
+        
 
         self._current_corpus = None
         self._current_transaction = None
@@ -94,6 +95,7 @@ class CorpusScraper:
         self._latest_meta_dict = None
         self._vis_configs = {}
         self._vis_config_contents = {}
+        self._vis_css_contents = {}
 
         self._text_next = defaultdict(lambda: None)
         self._text_prev = defaultdict(lambda: None)
@@ -268,7 +270,7 @@ class CorpusScraper:
             if corpus.github_relannis.endswith("zip"):
                 vm = self._get_zip_file_contents(vm_path, file_name)
             else:
-                with open(os.path.join(vm_path, file_name)) as f:
+                with open(os.path.join(vm_path, file_name), 'r', encoding='utf-8') as f:
                     vm = f.read()
         except (FileNotFoundError, IndexError) as e:
             raise ResolverVisMapIssue(
@@ -340,8 +342,27 @@ class CorpusScraper:
             corpus.urn_code = urn.textgroup_urn(self._latest_meta_dict["document_cts_urn"])
         return self._current_transaction
 
+    def _load_config_files(self, corpus, corpus_dirname):
+        # load config and css for visualizations
+        base_path = os.path.join(self.repo_path, corpus_dirname, corpus.annis_corpus_name + "_ANNIS.zip") if corpus.github_relannis.endswith('zip') else os.path.join(self.repo_path, corpus_dirname, corpus.github_relannis)
+        
+        for format in self._current_transaction._vis_formats:
+            css_path = os.path.join( "ExtData", format.slug + ".css")
+            config_path = os.path.join("ExtData", format.slug + ".config")
+            
+            if corpus.github_relannis.endswith('zip'):
+                print(f"Loading ZIP config and css for '{format.slug}' from '{css_path}' and '{config_path}'...")
+                self._vis_css_contents[format.slug] = self._get_zip_file_contents(base_path, css_path)
+                self._vis_config_contents[format.slug] = self._get_zip_file_contents(base_path, config_path)
+            else:
+                print(f"Loading file config and css for '{format.slug}' from '{css_path}' and '{config_path}'...")
+                self._vis_css_contents[format.slug] = open(os.path.join(base_path,css_path)).read()
+                self._vis_config_contents[format.slug] = open(os.path.join(base_path,config_path)).read()
+
+
     def _scrape_texts_and_add_to_tx(self, corpus, corpus_dirname, texts, tree_id):
         print(f"Preparing transaction for '{corpus_dirname}'...")
+        self._load_config_files(corpus, corpus_dirname)
         for filename, contents in tqdm(texts.items(), ncols=80):
             if contents:
                 self._current_text_contents = contents
@@ -354,15 +375,13 @@ class CorpusScraper:
         raise MetaNotFound(self.repo_path, self._current_text_contents.path)
 
     def _generate_visualizations_and_add_to_tx(self, text, contents):
-        for config_name in HTML_CONFIGS:
-            rendered_html = generate_visualization(
-                config_name, contents
-            )
-            
+        for name, config_text in self._vis_config_contents.items():    
+            rendered_html = generate_visualization(config_text, contents, name)
+            css_to_append=f"<style>/*Overrides*/{self._vis_css_contents[name]}</style>"
             vis = HtmlVisualization()
-            vis.visualization_format_slug = config_name
+            vis.visualization_format_slug = name
             
-            vis.html = rendered_html
+            vis.html = rendered_html+css_to_append
             self._current_transaction.add_vis((text, vis))
 
     def _scrape_text_and_add_to_tx(self, corpus, corpus_dirname, contents, tree_id, filename):

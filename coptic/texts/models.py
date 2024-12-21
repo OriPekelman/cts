@@ -176,9 +176,11 @@ class HtmlVisualization(models.Model):
 
     class Meta:
         verbose_name = "HTML Visualization"
-
+    # FIXME: temporary code duplication from scraper. This should be refactored
+        
     def get_text(self, corpus, tt_dir,tt_filename):
-        corpus_path = os.path.join("../../corpora",tt_dir, corpus.annis_corpus_name+"_TT")
+        #FIXME PATH should not be hard coded        
+        corpus_path = os.path.join("../../corpora", tt_dir, corpus.annis_corpus_name+"_TT")
         text = ""
 
         try:
@@ -205,9 +207,11 @@ class HtmlVisualization(models.Model):
     
         text = self.text_set.all()
         tt_dir, tt_filename = list(self.text_set.values_list('tt_dir','tt_filename'))[0]
-        corpus = text.values("corpus")[0]["corpus"]
-        tt_text = self.get_text(Corpus.objects.get(id=corpus),tt_dir, tt_filename)
-        return generate_visualization(self.visualization_format_slug, tt_text)
+        corpus_id = text.values("corpus")[0]["corpus"]
+        corpus=Corpus.objects.get(id=corpus_id)
+        tt_text = self.get_text(corpus, tt_dir, tt_filename)
+        raise "not implemented"
+        return generate_visualization(FIXMETHISNEEDSTOBETHEACTUALCONFIG, tt_text, self.visualization_format_slug)
     
     
     @property
